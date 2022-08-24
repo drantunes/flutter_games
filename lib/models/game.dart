@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Game {
   int id;
   String name;
@@ -7,6 +9,7 @@ class Game {
   int year;
   double ratingMember;
   double ratingCritic;
+  Color color;
 
   Game({
     required this.id,
@@ -17,5 +20,6 @@ class Game {
     required this.year,
     required this.ratingMember,
     required this.ratingCritic,
+    this.color = const Color(0xFF212121),
   });
 }
