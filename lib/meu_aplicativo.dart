@@ -18,7 +18,7 @@ class MeuAplicativo extends StatelessWidget {
             ),
         // brightness: Brightness.dark,
       ),
-      home: GamePage(),
+      home: const GamePage(),
     );
   }
 }

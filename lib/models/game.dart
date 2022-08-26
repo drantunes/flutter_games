@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_games/models/comment.dart';
 
 class Game {
   int id;
@@ -10,6 +11,7 @@ class Game {
   double ratingMember;
   double ratingCritic;
   Color color;
+  List<Comment> comments = [];
 
   Game({
     required this.id,
