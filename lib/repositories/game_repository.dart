@@ -1,11 +1,25 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_games/models/comment.dart';
 import 'package:flutter_games/models/game.dart';
 
-class GameRepository {
-  List<Game> games = [];
+class GameRepository extends ChangeNotifier {
+  List<Game> _games = [];
+
+  UnmodifiableListView<Game> get games => UnmodifiableListView<Game>(_games);
 
   GameRepository() {
-    games = [
+    loadGames();
+  }
+
+  addComment(Game game, Comment comment) {
+    game.comments.add(comment);
+    notifyListeners();
+  }
+
+  loadGames() {
+    _games = [
       Game(
         id: 0,
         name: 'League of Legends',
@@ -173,5 +187,6 @@ class GameRepository {
         color: const Color(0XFFFED4C6),
       ),
     ];
+    notifyListeners();
   }
 }

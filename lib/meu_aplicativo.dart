@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_games/pages/game_page.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MeuAplicativo extends StatelessWidget {
   const MeuAplicativo({Key? key}) : super(key: key);
@@ -11,11 +12,9 @@ class MeuAplicativo extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
-        textTheme: Theme.of(context).textTheme.copyWith(
-              headline6: const TextStyle(
-                fontSize: 20,
-              ),
-            ),
+        textTheme: GoogleFonts.sourceCodeProTextTheme(
+          ThemeData.light().textTheme,
+        ),
         // brightness: Brightness.dark,
       ),
       home: const GamePage(),

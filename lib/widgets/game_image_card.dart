@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_games/models/game.dart';
 
 class GameImageCard extends StatelessWidget {
-  final String image;
+  final Game game;
   final VoidCallback onTap;
 
   const GameImageCard({
     Key? key,
-    required this.image,
+    required this.game,
     required this.onTap,
   }) : super(key: key);
 
@@ -17,11 +18,37 @@ class GameImageCard extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       borderRadius: BorderRadius.circular(10),
       child: Ink.image(
-        image: AssetImage(image),
+        image: AssetImage(game.image),
         child: InkWell(
           splashColor: Theme.of(context).primaryColor.withOpacity(.2),
           highlightColor: Colors.white.withOpacity(.3),
           onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 10.0, right: 10),
+            child: Container(
+              alignment: Alignment.topRight,
+              decoration: const BoxDecoration(),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(30)),
+                child: Container(
+                  width: 26,
+                  height: 26,
+                  alignment: Alignment.center,
+                  color: Colors.black87,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 1, left: 1),
+                    child: Text(
+                      "${game.comments.length}",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );

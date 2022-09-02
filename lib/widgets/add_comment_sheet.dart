@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_games/models/comment.dart';
 import 'package:flutter_games/models/game.dart';
+import 'package:flutter_games/repositories/game_repository.dart';
+import 'package:provider/provider.dart';
 
 class AddCommentSheet extends StatefulWidget {
   final Game game;
-  final void Function() onSave;
+  // final void Function() onSave;
 
   const AddCommentSheet({
     Key? key,
     required this.game,
-    required this.onSave,
+    // required this.onSave,
   }) : super(key: key);
 
   @override
@@ -22,11 +24,13 @@ class _AddCommentSheetState extends State<AddCommentSheet> {
 
   saveComment() {
     if (_formKey.currentState!.validate()) {
-      widget.game.comments.add(Comment(
-        text: _comment.text,
-        date: DateTime.now(),
-      ));
-      widget.onSave();
+      context.read<GameRepository>().addComment(
+            widget.game,
+            Comment(
+              text: _comment.text,
+              date: DateTime.now(),
+            ),
+          );
 
       Navigator.of(context).pop('inserido');
     }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_games/models/game.dart';
+import 'package:flutter_games/repositories/game_repository.dart';
 import 'package:flutter_games/widgets/add_comment_sheet.dart';
+import 'package:provider/provider.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class GameDetailsPage extends StatefulWidget {
   final Game game;
@@ -15,18 +18,29 @@ class GameDetailsPage extends StatefulWidget {
 }
 
 class _GameDetailsPageState extends State<GameDetailsPage> {
-  updateScreen() {
-    setState(() {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Comentário adicionado!'),
-          action: SnackBarAction(
-            label: 'OK',
-            onPressed: () => ScaffoldMessenger.of(context).hideCurrentSnackBar(),
-          ),
-        ),
-      );
-    });
+  // updateScreen() {
+  //   setState(() {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: const Text('Comentário adicionado!'),
+  //         action: SnackBarAction(
+  //           label: 'OK',
+  //           onPressed: () => ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+  //         ),
+  //       ),
+  //     );
+  //   });
+  // }
+
+  ValueNotifier<bool> showDescription = ValueNotifier(true);
+
+  getDate(DateTime commentDate) {
+    const locale = 'pt_BR';
+    return timeago.format(
+      commentDate,
+      locale: locale,
+      allowFromNow: true,
+    );
   }
 
   @override
@@ -41,19 +55,31 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
         foregroundColor: Colors.white,
         actions: [
           IconButton(
-              icon: const Icon(Icons.add_comment_rounded),
-              onPressed: () async {
-                // final result = await showModalBottomSheet(
-                showModalBottomSheet(
-                  context: context,
-                  builder: (_) => AddCommentSheet(game: widget.game, onSave: updateScreen),
-                  backgroundColor: Colors.transparent,
-                  isScrollControlled: true,
-                );
-                // if (result == 'inserido') {
-                //   setState(() {});
-                // }
-              }),
+            icon: const Icon(Icons.add_comment_rounded),
+            onPressed: () async {
+              // final result = await showModalBottomSheet(
+              showModalBottomSheet(
+                context: context,
+                builder: (_) => AddCommentSheet(
+                  game: widget.game, /*onSave: updateScreen*/
+                ),
+                backgroundColor: Colors.transparent,
+                isScrollControlled: true,
+              );
+              // if (result == 'inserido') {
+              //   setState(() {});
+              // }
+            },
+          ),
+          ValueListenableBuilder(
+            valueListenable: showDescription,
+            builder: (context, bool show, _) {
+              return IconButton(
+                icon: Icon(show ? Icons.subtitles_off : Icons.subtitles),
+                onPressed: () => showDescription.value = !showDescription.value,
+              );
+            },
+          ),
         ],
       ),
       body: Stack(
@@ -67,11 +93,21 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
             child: ListView(
               children: [
                 const SizedBox(height: 250),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Text(widget.game.description),
-                  ),
+                ValueListenableBuilder(
+                  valueListenable: showDescription,
+                  builder: (context, bool show, _) {
+                    return AnimatedCrossFade(
+                      duration: const Duration(milliseconds: 300),
+                      firstChild: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Text(widget.game.description),
+                        ),
+                      ),
+                      secondChild: const SizedBox.shrink(),
+                      crossFadeState: show ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+                    );
+                  },
                 ),
                 const SizedBox(height: 12),
                 Card(
@@ -116,33 +152,42 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                Card(
-                  child: SizedBox(
-                    height: (widget.game.comments.isEmpty) ? 120 : 220,
-                    child: ListView(
-                      // crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 12, top: 24),
-                          child: Text("${widget.game.comments.length} Comentários",
-                              style: Theme.of(context).textTheme.headline6),
-                        ),
-                        ...List.from(
-                          widget.game.comments.map(
-                            (comment) => ListTile(
-                              title: Text(comment.text),
-                              subtitle: Text("Em: ${comment.date}"),
+                Consumer<GameRepository>(builder: (context, __, _) {
+                  return Card(
+                    child: SizedBox(
+                      height: (widget.game.comments.isEmpty || widget.game.comments.length < 2) ? 120 : 190,
+                      child: ListView(
+                        // crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12, top: 24),
+                            child: Text("${widget.game.comments.length} Comentários",
+                                style: Theme.of(context).textTheme.headline6),
+                          ),
+                          ...List.from(
+                            widget.game.comments.map(
+                              (comment) => ListTile(
+                                title: Text(comment.text),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.access_time, size: 16),
+                                    const SizedBox(width: 2),
+                                    Text(getDate(comment.date)),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                        if (widget.game.comments.isEmpty)
-                          const ListTile(
-                            title: Text("0 Comentários"),
-                          ),
-                      ],
+                          if (widget.game.comments.isEmpty)
+                            const ListTile(
+                              title: Text("0 Comentários"),
+                            ),
+                        ],
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                }),
                 const SizedBox(height: 24),
               ],
             ),
