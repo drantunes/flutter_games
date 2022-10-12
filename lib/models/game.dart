@@ -23,5 +23,6 @@ class Game {
     required this.ratingMember,
     required this.ratingCritic,
     this.color = const Color(0xFF212121),
+    comments,
   });
 }
