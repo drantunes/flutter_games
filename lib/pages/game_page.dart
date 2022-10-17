@@ -27,16 +27,20 @@ class _GamePageState extends State<GamePage> {
         title: const Text('Top Games'),
       ),
       body: Consumer<GameRepository>(
-        builder: (context, repository, _) => GamesGridView(
-          games: List.from(
-            repository.games.map(
-              (Game game) => GameImageCard(
-                game: game,
-                onTap: () => openDetails(game),
+        builder: (context, repository, _) => repository.games.isEmpty
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : GamesGridView(
+                games: List.from(
+                  repository.games.map(
+                    (Game game) => GameImageCard(
+                      game: game,
+                      onTap: () => openDetails(game),
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
-        ),
       ),
     );
   }
