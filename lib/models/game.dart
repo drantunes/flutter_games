@@ -25,4 +25,18 @@ class Game {
     this.color = const Color(0xFF212121),
     comments,
   });
+
+  static Game fromJson(Map<dynamic, dynamic> gameItem) {
+    return Game(
+      id: int.parse(gameItem['id']),
+      name: gameItem['name'] as String,
+      image: gameItem['image'] as String,
+      genre: List.from(gameItem['genre'] as List),
+      description: gameItem['description'] as String,
+      year: gameItem['year'] as int,
+      ratingMember: double.parse(gameItem['ratingMember'].toString()),
+      ratingCritic: double.parse(gameItem['ratingCritic'].toString()),
+      color: Color(int.parse(gameItem['color'])),
+    );
+  }
 }

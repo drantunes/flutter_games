@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_games/models/game.dart';
 import 'package:flutter_games/repositories/game_repository.dart';
@@ -86,7 +87,12 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
         children: [
           SizedBox(
             width: double.infinity,
-            child: Image.asset(widget.game.image, fit: BoxFit.fitWidth, alignment: Alignment.topCenter),
+            child: CachedNetworkImage(
+              placeholder: (context, url) => const CircularProgressIndicator(),
+              imageUrl: widget.game.image,
+              fit: BoxFit.fitWidth,
+              alignment: Alignment.topCenter,
+            ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),

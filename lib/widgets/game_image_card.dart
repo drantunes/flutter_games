@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_games/models/game.dart';
 
@@ -18,7 +19,7 @@ class GameImageCard extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       borderRadius: BorderRadius.circular(10),
       child: Ink.image(
-        image: AssetImage(game.image),
+        image: CachedNetworkImageProvider(game.image),
         child: InkWell(
           splashColor: Theme.of(context).primaryColor.withOpacity(.2),
           highlightColor: Colors.white.withOpacity(.3),
