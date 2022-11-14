@@ -1,11 +1,15 @@
+import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+
+import 'package:http/http.dart' as http;
+
 import 'package:flutter_games/constants.dart';
 import 'package:flutter_games/models/comment.dart';
 import 'package:flutter_games/models/game.dart';
-import 'package:http/http.dart' as http;
 
 class GameRepository extends ChangeNotifier {
   final List<Game> _games = [];
@@ -33,25 +37,33 @@ class GameRepository extends ChangeNotifier {
     return false;
   }
 
-  loadGames() async {
-    final url = Uri.parse('$baseApi/games');
+  Future<void> loadGames() async {
+    try {
+      final response = await http
+          .get(
+            Uri.parse('$baseApi/games'),
+          )
+          .timeout(const Duration(seconds: 2));
 
-    final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final gameList = jsonDecode(response.body) as List;
 
-    if (response.statusCode == 200) {
-      final gameList = jsonDecode(response.body) as List;
-
-      for (var gameItem in gameList) {
-        final game = Game.fromJson(gameItem);
-        // await loadComments(game);
-        _games.add(game);
+        for (var gameItem in gameList) {
+          _games.add(
+            Game.fromJson(gameItem),
+          );
+        }
+        notifyListeners();
+        await loadComments();
       }
-      notifyListeners();
-      await loadComments();
+    } on HttpException catch (error) {
+      debugPrint('Erro ao conectar a API: $error');
+    } on TimeoutException {
+      debugPrint('Timeout excedido ao conectar a API!');
     }
   }
 
-  loadComments() async {
+  Future<void> loadComments() async {
     for (var game in _games) {
       final resp = await http.get(
         Uri.parse('$baseApi/games/${game.id}/comments'),
